@@ -25,3 +25,29 @@ int initDirData() {
 
     return falha;
 }
+
+int initDataFiles () {
+    struct _stat buffer;
+    int falha = 0;
+    char *file_erro;
+    const char *arquivos[4] = {"data/transacao.txt", "data/usuario.txt", "data/carteira.txt", "data/cotacao.txt"};
+
+    for (int i = 0; i < 4; i++) {
+        if (_stat((char *)arquivos[i], &buffer) == -1) {
+            FILE *f = fopen((char *)arquivos[i], "w");
+
+            if (f == NULL) {
+                falha = 1;
+                strcpy(file_erro, (char *)arquivos[i]);
+            }
+
+            fclose(f);
+        }
+    }
+
+    if (falha != 0) {
+        printf(RED "ERRO: " CRESET "Não foi possível criar o arquivo %s. %s\n", file_erro, strerror(errno));
+    }
+
+    return falha;
+}
