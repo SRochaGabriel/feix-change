@@ -22,7 +22,7 @@ void initCotacao(FILE *f) {
     }
 }
 
-int initDirData() {
+void initDirData() {
     struct _stat buffer;
     const char *dir = "data";
     int falha = 0;
@@ -38,13 +38,12 @@ int initDirData() {
     } 
 
     if (falha != 0) {
-        printf(RED "ERRO: " CRESET "%s\n", strerror(errno));
+        fprintf(stderr, RED "ERRO: " CRESET "%s\n", strerror(errno));
+        exit(EXIT_FAILURE);
     }
-
-    return falha;
 }
 
-int initDataFiles () {
+void initDataFiles () {
     struct _stat buffer;
     int falha = 0;
     char *file_erro;
@@ -66,10 +65,9 @@ int initDataFiles () {
     }
 
     if (falha != 0) {
-        printf(RED "ERRO: " CRESET "Não foi possível criar o arquivo %s. %s\n", file_erro, strerror(errno));
+        fprintf(stderr, RED "ERRO: " CRESET "Não foi possível criar o arquivo %s. %s\n", file_erro, strerror(errno));
+        exit(EXIT_FAILURE);
     }
-
-    return falha;
 }
 
 float getVariacao() {
