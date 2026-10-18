@@ -1,0 +1,2 @@
+int initDirData();
+int initDataFiles();
