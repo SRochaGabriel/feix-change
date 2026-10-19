@@ -5,6 +5,7 @@
 
 int main() {
     int tela = 1;
+    int erro = 0;
     char opt = '~';
     bool auth = false;
     bool running = true;
@@ -16,9 +17,7 @@ int main() {
     while (running) {
         if (!auth) {
             printTela(tela, &opt);
-            if (opt == 'S') {
-                running = false;
-            }
+            navegacao(&tela, opt, &running, &auth, &erro);
         }
     }
 
