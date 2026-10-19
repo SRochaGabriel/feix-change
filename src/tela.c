@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
 #include "ANSI-color-codes.h"
 
 void clearTela() {
@@ -18,6 +19,10 @@ void printLogo() {
     printf(RED ">>==============================================================================<<\n" CRESET);
 }
 
+void getOpt(char *opt) {
+    *opt = toupper(getchar());
+}
+
 void printTela(int tela, char *opt) {
     switch (tela) {
         case 1:
@@ -25,7 +30,6 @@ void printTela(int tela, char *opt) {
             printLogo();
             printf("L - Login    C - Cadastro    S - Sair\n");
     }
-    *opt = toupper(getchar());
 }
 
 void navegacao(int *tela, char opt, bool *running, bool *auth, int *erro) {
@@ -41,4 +45,15 @@ void navegacao(int *tela, char opt, bool *running, bool *auth, int *erro) {
                 *erro = 1;
             }
     }
+}
+
+void printErro(int erro) {
+    char *err_msg;
+
+    switch (erro) {
+        case 1:
+            err_msg = RED "ERRO: " CRESET "Opcao selecionada invalida. Tente novamente.\n";
+    }
+
+    fprintf(stderr, err_msg);
 }

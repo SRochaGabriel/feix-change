@@ -16,7 +16,11 @@ int main() {
 
     while (running) {
         if (!auth) {
-            printTela(tela, &opt);
+            printTela(tela);
+            if (erro != 0) {
+                printErro(erro);
+            }
+            getOpt(&opt);
             navegacao(&tela, opt, &running, &auth, &erro);
         }
     }
