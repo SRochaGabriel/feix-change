@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "ANSI-color-codes.h"
 
 void clearTela() {
@@ -16,9 +17,12 @@ void printLogo() {
     printf(RED ">>==============================================================================<<\n" CRESET);
 }
 
-void printMenu(int tela) {
+void printTela(int tela, char *opt) {
     switch (tela) {
         case 1:
-            print("1 - Login    2 - Cadastro    3 - Sair");
+            clearTela();
+            printLogo();
+            printf("L - Login    C - Cadastro    S - Sair\n");
     }
+    *opt = toupper(getchar());
 }
