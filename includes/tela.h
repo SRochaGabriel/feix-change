@@ -1,1 +1,1 @@
-void printLogo();
+void printTela(int tela, char *opt);
