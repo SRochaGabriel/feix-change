@@ -21,8 +21,15 @@ void printLogo() {
 
 char getOpt() {
     char opt = toupper(getchar());
+    int i = 0;
 
-    while(getchar() != '\n');
+    while(getchar() != '\n') {
+        i++;
+    }
+
+    if (i > 0) {
+        opt = '~';
+    }
 
     return opt;
 }
