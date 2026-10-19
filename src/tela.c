@@ -19,8 +19,12 @@ void printLogo() {
     printf(RED ">>==============================================================================<<\n" CRESET);
 }
 
-void getOpt(char *opt) {
-    *opt = toupper(getchar());
+char getOpt() {
+    char opt = toupper(getchar());
+
+    while(getchar() != '\n');
+
+    return opt;
 }
 
 void printTela(int tela, char *opt) {

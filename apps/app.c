@@ -20,7 +20,7 @@ int main() {
             if (erro != 0) {
                 printErro(erro);
             }
-            getOpt(&opt);
+            opt = getOpt();
             navegacao(&tela, opt, &running, &auth, &erro);
         }
     }
