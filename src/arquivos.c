@@ -5,6 +5,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include "navegacao.h"
 #include "ANSI-color-codes.h"
 
 void initCotacao(FILE *f) {
@@ -75,4 +78,27 @@ float getVariacao() {
     return (rand() / (float)RAND_MAX) + (rand() % 10 - 5);
 }
 
-void insertNovoUsuario() {}
+void insertNovoUsuario(char *nome, char *cpf, char *senha) {
+    char registro[200];
+    bool erro = false;
+    FILE *f = fopen("data/usuario.txt", "a");
+
+    if (f == NULL) {
+        erro = true;
+        printErro("Não foi possível inserir o usuário.");
+        fclose(f);
+    }
+
+    if (!erro) {
+        strcat(nome, ";");
+        strcat(cpf, ";");
+
+        strcpy(registro, nome);
+        strcat(registro, cpf);
+        strcat(registro, senha);
+
+        fprintf(f, "%s\n", registro);
+    }
+
+    fclose(f);
+}
