@@ -5,8 +5,8 @@
 
 int main() {
     int tela = 1;
-    int erro = 0;
     char opt = '~';
+    bool erro = false;
     bool auth = false;
     bool running = true;
     
@@ -17,8 +17,8 @@ int main() {
     while (running) {
         if (!auth) {
             printTela(tela);
-            if (erro != 0) {
-                printErro(erro);
+            if (erro) {
+                printErro("Opcao selecionada invalida. Tente novamente.");
             }
             opt = getOpt();
             navegacao(&tela, opt, &running, &auth, &erro);
