@@ -74,3 +74,5 @@ float getVariacao() {
     srand(time(NULL));
     return (rand() / (float)RAND_MAX) + (rand() % 10 - 5);
 }
+
+void insertNovoUsuario() {}
