@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "tela.h"
+#include "navegacao.h"
 #include "arquivos.h"
 
 int main() {
