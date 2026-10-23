@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <unistd.h>
 #include "navegacao.h"
 #include "ANSI-color-codes.h"
@@ -80,11 +79,11 @@ float getVariacao() {
 
 void insertNovoUsuario(char *nome, char *cpf, char *senha) {
     char registro[200];
-    bool erro = false;
+    int erro = 0;
     FILE *f = fopen("data/usuario.txt", "a");
 
     if (f == NULL) {
-        erro = true;
+        erro = 1;
         printErro("Não foi possível inserir o usuário.");
         fclose(f);
     }

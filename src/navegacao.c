@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #include "ANSI-color-codes.h"
@@ -44,7 +43,7 @@ void printTela(int tela, char *opt) {
     }
 }
 
-void navegacao(int *tela, char opt, bool *running, bool *auth, bool *erro) {
+void navegacao(int *tela, char opt, int *running, int *auth, int *erro) {
     switch (*tela) {
         case 1:
             if (opt == 'L') {
@@ -52,9 +51,9 @@ void navegacao(int *tela, char opt, bool *running, bool *auth, bool *erro) {
             } else if (opt == 'C') {
                 cadastrar();
             } else if (opt == 'S') {
-                *running = false;
+                *running = 0;
             } else {
-                *erro = true;
+                *erro = 1;
             }
     }
 }

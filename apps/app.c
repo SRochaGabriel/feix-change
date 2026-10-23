@@ -1,20 +1,20 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include "navegacao.h"
 #include "arquivos.h"
+#include "usuario.h"
 
 int main() {
     int tela = 1;
+    int erro = 0;
+    int auth = 0;
+    int running = 1;
     char opt = '~';
-    bool erro = false;
-    bool auth = false;
-    bool running = true;
     
     // inicializacao de ambiente
     initDirData();
     initDataFiles();
 
-    while (running) {
+    while (running == 1) {
         if (!auth) {
             printTela(tela);
             if (erro) {
