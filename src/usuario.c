@@ -111,10 +111,9 @@ void cadastrar() {
 
     if (continua) {
         insertNovoUsuario(nome, cpf, senha);
+        printf("Cadastrando usuario...");
+        sleep(2);
+        printf(GRN " Usuario cadastrado com sucesso!");
+        sleep(1);
     }
-
-    printf("Cadastrando usuario...");
-    sleep(2);
-    printf(GRN " Usuario cadastrado com sucesso!");
-    sleep(1);
 }
