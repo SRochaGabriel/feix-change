@@ -101,3 +101,36 @@ void insertNovoUsuario(char *nome, char *cpf, char *senha) {
 
     fclose(f);
 }
+
+int checkCpfUnique(char *cpf_input) {
+    char cpf_compare[12];
+    char linha[150];
+    int result = 1;
+    int pos = 0;
+    int cmp_res = 0;
+    FILE *f = fopen("data/usuario.txt", "r");
+
+    if (f == NULL) {
+        result = 0;
+        printErro("Erro durante a inserção do usuário.");
+        fclose(f);
+    } else {
+        while(fgets(linha, sizeof(linha), f)) {    
+            pos = strcspn(linha, ";");
+            pos++;
+            strncpy(cpf_compare, linha + pos, 11);
+            cmp_res = strcmp(cpf_compare, cpf_input);
+
+            if (cmp_res == 0) {
+                printErro("Informacoes de cadastro invalidas. Voce sera redirecionado para a tela inicial. Tente se cadastrar novamente.");
+                sleep(2);
+                result = 0;
+                break;
+            }
+        }
+    }
+
+    fclose(f);
+
+    return result;
+}

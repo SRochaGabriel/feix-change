@@ -109,6 +109,8 @@ void cadastrar() {
         } while (erro);
     }
 
+    continua = checkCpfUnique(cpf);
+
     if (continua) {
         insertNovoUsuario(nome, cpf, senha);
         printf("Cadastrando usuario...");
