@@ -10,6 +10,11 @@
 #include "usuario.h"
 #include "ANSI-color-codes.h"
 
+#define USR_PATH "data/usuario.txt"
+#define COT_PATH "data/cotacao.txt"
+#define CART_PATH "data/carteira.txt"
+#define TRNS_PATH "data/transacao.txt"
+
 void initCotacao(FILE *f) {
     char *data_str;
     char info[100];
@@ -22,6 +27,39 @@ void initCotacao(FILE *f) {
         strcpy(info, cotacoes_ini[i]);
         strcat(info, data_str);
         fprintf(f, "%s\n", info);
+    }
+}
+
+void exibeCotacoes() {
+    int pos = 0;
+    char nome[4];
+    char cotacao[30];
+    char data[50];
+    char linha[50];
+    FILE *f = fopen(COT_PATH, "r");
+
+    if (f == NULL) {
+        printErro("Erro ao acessar base de dados.");
+    } else {
+        while(fgets(linha, sizeof(linha), f)) {    
+            pos = strcspn(linha, ";");
+            strncpy(nome, linha, pos);
+
+            if (strcmp(nome, "BRL") != 0) {
+                strncpy(data, linha + pos, 50);
+    
+                pos = strcspn(data + 1, ";");
+                strncpy(cotacao, data + 1, pos);
+                
+                printf(YEL "|");
+                printf(" %s - %s ", nome, cotacao);
+
+                memset(cotacao, 0, sizeof(cotacao));
+            }
+        }
+        printf("|\n" CRESET);
+
+        fclose(f);
     }
 }
 
@@ -50,7 +88,7 @@ void initDataFiles () {
     struct _stat buffer;
     int falha = 0;
     char *file_erro;
-    const char *arquivos[] = {"data/transacao.txt", "data/usuario.txt", "data/carteira.txt", "data/cotacao.txt"};
+    const char *arquivos[] = {TRNS_PATH, USR_PATH, CART_PATH, COT_PATH};
 
     for (int i = 0; i < 4; i++) {
         if (_stat((char *)arquivos[i], &buffer) == -1) {
@@ -81,7 +119,7 @@ float getVariacao() {
 void insertNovoUsuario(char *nome, char *cpf, char *senha) {
     char registro[200];
     int erro = 0;
-    FILE *f = fopen("data/usuario.txt", "a");
+    FILE *f = fopen(USR_PATH, "a");
 
     if (f == NULL) {
         erro = 1;
@@ -108,7 +146,7 @@ int checkCpfUnique(char *cpf) {
     char linha[150];
     int result = 1;
     int pos = 0;
-    FILE *f = fopen("data/usuario.txt", "r");
+    FILE *f = fopen(USR_PATH, "r");
 
     if (f == NULL) {
         result = 0;
@@ -144,7 +182,7 @@ int authUser(char *nome, char *cpf, char *senha) {
     int result = 0;
     int pos = 0;
 
-    FILE *f = fopen("data/usuario.txt", "r");
+    FILE *f = fopen(USR_PATH, "r");
 
     if (f == NULL) {
         printErro("Erro ao acessar base de dados.");

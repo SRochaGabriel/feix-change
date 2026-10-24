@@ -19,7 +19,6 @@ int main() {
         if (erro) {
             printErro("Opcao selecionada invalida. Tente novamente.");
         }
-        printf("%s - %s - %s", getUsrNome(user), getUsrCpf(user), getUsrSenha(user));
         opt = getOpt();
         navegacao(&tela, opt, &running, &auth, &erro, user);
     }

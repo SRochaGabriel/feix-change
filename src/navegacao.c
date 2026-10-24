@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "ANSI-color-codes.h"
 #include "usuario.h"
+#include "arquivos.h"
 
 void clearTela() {
     system("cls");
@@ -40,12 +41,13 @@ void printTela(int tela) {
         case 1:
             clearTela();
             printLogo();
-            printf("L - Login   C - Cadastro    S - Sair\n");
+            printf("\nL - Login   C - Cadastro    S - Sair\n");
             break;
         case 2:
             clearTela();
             printLogo();
-            printf("C - Saldo    E - Extrato    D - Depositar    R - Saque    I - Comprar cripto    V - Vender cripto    A - Atualizar cotacao    S - Sair\n");
+            exibeCotacoes();
+            printf("\nC - Saldo    E - Extrato    D - Depositar    R - Saque    I - Comprar cripto    V - Vender cripto    A - Atualizar cotacao    S - Sair\n");
             break;
     }
 }
@@ -59,9 +61,7 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
         } else {
             *running = 0;
         }
-    }
-
-    if (running) {
+    } else if (running) {
         switch (*tela) {
             case 1:
                 if (opt == 'L') {
