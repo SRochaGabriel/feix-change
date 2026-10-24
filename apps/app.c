@@ -15,15 +15,13 @@ int main() {
     initDataFiles();
 
     while (running == 1) {
-        if (!auth) {
-            printTela(tela);
-            if (erro) {
-                printErro("Opcao selecionada invalida. Tente novamente.");
-            }
-            printf("%s --- %s --- %s \n", getUsrCpf(user), getUsrNome(user), getUsrSenha(user));
-            opt = getOpt();
-            navegacao(&tela, opt, &running, &auth, &erro, user);
+        printTela(tela);
+        if (erro) {
+            printErro("Opcao selecionada invalida. Tente novamente.");
         }
+        printf("%s - %s - %s", getUsrNome(user), getUsrCpf(user), getUsrSenha(user));
+        opt = getOpt();
+        navegacao(&tela, opt, &running, &auth, &erro, user);
     }
 
     return 0;

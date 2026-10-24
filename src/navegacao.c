@@ -35,12 +35,18 @@ char getOpt() {
     return opt;
 }
 
-void printTela(int tela, char *opt) {
+void printTela(int tela) {
     switch (tela) {
         case 1:
             clearTela();
             printLogo();
-            printf("L - Login    C - Cadastro    S - Sair\n");
+            printf("L - Login   C - Cadastro    S - Sair\n");
+            break;
+        case 2:
+            clearTela();
+            printLogo();
+            printf("C - Saldo    E - Extrato    D - Depositar    R - Saque    I - Comprar cripto    V - Vender cripto    A - Atualizar cotacao    S - Sair\n");
+            break;
     }
 }
 
@@ -48,6 +54,8 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
     if (opt == 'S') {
         if (*auth) {
             *auth = 0;
+            *tela = 1;
+            logoff(user);
         } else {
             *running = 0;
         }
@@ -57,7 +65,9 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
         switch (*tela) {
             case 1:
                 if (opt == 'L') {
-                    login(user);
+                    if (login(auth, user) == 1) {
+                        *tela = 2;
+                    }
                 } else if (opt == 'C') {
                     cadastrar();
                 } else {

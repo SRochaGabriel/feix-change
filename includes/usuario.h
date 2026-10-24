@@ -4,4 +4,5 @@ const char *getUsrNome(const Usuario *user);
 const char *getUsrCpf(const Usuario *user);
 const char *getUsrSenha(const Usuario *user);
 void cadastrar();
-void login();
+int login(int *auth, Usuario *user);
+void logoff(Usuario *user);

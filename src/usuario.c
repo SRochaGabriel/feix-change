@@ -144,7 +144,7 @@ void cadastrar() {
     }
 }
 
-void login(Usuario *user) {
+int login(int *auth, Usuario *user) {
     char nome[150];
     char cpf[20];
     char senha[10];
@@ -221,8 +221,15 @@ void login(Usuario *user) {
 
         if (authUser(nome, cpf, senha) == 1) {
             setUsr(user, nome, cpf, senha);
+            *auth = 1;
             printf(GRN " Bem-vindo!");
             sleep(1);
         }
     }
+
+    return continua;
+}
+
+void logoff(Usuario *user) {
+    memset(user, 0, sizeof(Usuario));
 }
