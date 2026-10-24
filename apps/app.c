@@ -19,6 +19,7 @@ int main() {
         if (erro) {
             printErro("Opcao selecionada invalida. Tente novamente.");
         }
+        // updateCotacoes();
         opt = getOpt();
         navegacao(&tela, opt, &running, &auth, &erro, user);
     }

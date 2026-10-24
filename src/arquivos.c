@@ -32,11 +32,14 @@ void initCotacao(FILE *f) {
 
 void exibeCotacoes() {
     int pos = 0;
-    char nome[4];
-    char cotacao[30];
+    char nome[4] = "";
+    char cotacao[30] = "";
+    char ultimo_update[30] = "";
     char data[50];
     char linha[50];
     FILE *f = fopen(COT_PATH, "r");
+    time_t tempo;
+    struct tm *tmp;
 
     if (f == NULL) {
         printErro("Erro ao acessar base de dados.");
@@ -51,13 +54,21 @@ void exibeCotacoes() {
                 pos = strcspn(data + 1, ";");
                 strncpy(cotacao, data + 1, pos);
                 
+                if (strlen(ultimo_update) == 0) {
+                    strncpy(ultimo_update, data + pos + 2, 11);
+                }
                 printf(YEL "|");
                 printf(" %s - %s ", nome, cotacao);
 
                 memset(cotacao, 0, sizeof(cotacao));
             }
         }
-        printf("|\n" CRESET);
+
+        tempo = (time_t)atoi(ultimo_update);
+        tmp = localtime(&tempo);
+        strftime(ultimo_update, sizeof(ultimo_update), "%d/%m/%Y", tmp);
+
+        printf("| Ultima atualizacao em: %s\n" CRESET, ultimo_update);
 
         fclose(f);
     }
@@ -87,7 +98,7 @@ void initDirData() {
 void initDataFiles () {
     struct _stat buffer;
     int falha = 0;
-    char *file_erro;
+    char *file_erro = "";
     const char *arquivos[] = {TRNS_PATH, USR_PATH, CART_PATH, COT_PATH};
 
     for (int i = 0; i < 4; i++) {
@@ -142,8 +153,8 @@ void insertNovoUsuario(char *nome, char *cpf, char *senha) {
 }
 
 int checkCpfUnique(char *cpf) {
-    char cpf_compare[12];
-    char linha[150];
+    char cpf_compare[12] = "";
+    char linha[150] = "";
     int result = 1;
     int pos = 0;
     FILE *f = fopen(USR_PATH, "r");
@@ -173,11 +184,11 @@ int checkCpfUnique(char *cpf) {
 }
 
 int authUser(char *nome, char *cpf, char *senha) {
-    char nome_compare[120];
-    char cpf_compare[12];
-    char senha_compare[7];
-    char dados[19];
-    char linha[150];
+    char nome_compare[120] = "";
+    char cpf_compare[12] = "";
+    char senha_compare[7] = "";
+    char dados[19] = "";
+    char linha[150] = "";
 
     int result = 0;
     int pos = 0;
@@ -216,4 +227,38 @@ int authUser(char *nome, char *cpf, char *senha) {
     }
 
     return result;
+}
+
+void updateCotacoes() {
+    // float variacao = getVariacao();
+    // int pos = 0;
+    // char nome[4];
+    // char cotacao[30];
+    // char ultimo_update[12];
+    // char data[50];
+    // char linha[50];
+    // FILE *f = fopen(COT_PATH, "r");
+    // FILE *f2 = fopen("/data/cotacoesUPDATE.txt", "w");
+
+    // if (f == NULL || f2 == NULL){
+    //     printErro("Erro ao acessar base de dados.");
+    // } else {
+    //     while(fgets(linha, sizeof(linha), f)) {    
+    //         pos = strcspn(linha, ";");
+    //         strncpy(nome, linha, pos);
+
+    //         if (strcmp(nome, "BRL") != 0) {
+    //             strncpy(data, linha + pos, 50);
+    
+    //             pos = strcspn(data + 1, ";");
+    //             strncpy(cotacao, data + 1, pos);
+    //             strncpy(ultimo_update, data + pos + 1, 11);
+
+    //             memset(cotacao, 0, sizeof(cotacao));
+    //         }
+    //     }
+    //     printf("|\n" CRESET);
+
+    //     fclose(f);
+    // }
 }
