@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 #include "ANSI-color-codes.h"
 #include "usuario.h"
 
@@ -44,17 +45,25 @@ void printTela(int tela, char *opt) {
 }
 
 void navegacao(int *tela, char opt, int *running, int *auth, int *erro) {
-    switch (*tela) {
-        case 1:
-            if (opt == 'L') {
-                *tela = 2;
-            } else if (opt == 'C') {
-                cadastrar();
-            } else if (opt == 'S') {
-                *running = 0;
-            } else {
-                *erro = 1;
-            }
+    if (opt == 'S') {
+        if (*auth) {
+            *auth = 0;
+        } else {
+            *running = 0;
+        }
+    }
+
+    if (running) {
+        switch (*tela) {
+            case 1:
+                if (opt == 'L') {
+                    login();
+                } else if (opt == 'C') {
+                    cadastrar();
+                } else {
+                    *erro = 1;
+                }
+        }
     }
 }
 
