@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include "navegacao.h"
+#include "usuario.h"
 #include "ANSI-color-codes.h"
 
 void initCotacao(FILE *f) {
@@ -102,35 +103,81 @@ void insertNovoUsuario(char *nome, char *cpf, char *senha) {
     fclose(f);
 }
 
-int checkCpfUnique(char *cpf_input) {
+int checkCpfUnique(char *cpf) {
     char cpf_compare[12];
     char linha[150];
     int result = 1;
     int pos = 0;
-    int cmp_res = 0;
     FILE *f = fopen("data/usuario.txt", "r");
 
     if (f == NULL) {
         result = 0;
-        printErro("Erro durante a inserção do usuário.");
-        fclose(f);
+        printErro("Erro ao acessar base de dados.");
     } else {
         while(fgets(linha, sizeof(linha), f)) {    
             pos = strcspn(linha, ";");
             pos++;
             strncpy(cpf_compare, linha + pos, 11);
-            cmp_res = strcmp(cpf_compare, cpf_input);
 
-            if (cmp_res == 0) {
+            if (strcmp(cpf_compare, cpf) == 0) {
                 printErro("Informacoes de cadastro invalidas. Voce sera redirecionado para a tela inicial. Tente se cadastrar novamente.");
                 sleep(2);
                 result = 0;
                 break;
             }
         }
+
+        fclose(f);
     }
 
-    fclose(f);
+
+    return result;
+}
+
+int authUser(char *cpf, char *senha) {
+    char nome_compare[120];
+    char cpf_compare[12];
+    char senha_compare[7];
+    char dados[19];
+    char linha[150];
+
+    int result = 0;
+    int pos = 0;
+
+    FILE *f = fopen("data/usuario.txt", "r");
+
+    if (f == NULL) {
+        result = 0;
+        printErro("Erro ao acessar base de dados.");
+    } else {
+        while(fgets(linha, sizeof(linha), f)) {    
+            pos = strcspn(linha, ";");
+            pos++;
+            strncpy(nome_compare, linha, pos - 1);
+            strncpy(dados, linha + pos, 18);
+            
+            pos = strcspn(dados, ";");
+            pos++;
+            strncpy(cpf_compare, dados, 11);
+            strncpy(senha_compare, dados + pos, 6);
+            
+            printf("NOME: %s\n", nome_compare);
+            sleep(3);
+            
+            if (strcmp(cpf_compare, cpf) == 0 && strcmp(senha_compare, senha) == 0) {
+                result = 1;
+                break;
+            } else {
+                memset(nome_compare, 0, sizeof(nome_compare));
+            }
+        }
+        
+        if (!result) {
+            printErro("Informacoes de login invalidas. Tente novamente.");
+            sleep(2);
+        }
+        fclose(f);
+    }
 
     return result;
 }

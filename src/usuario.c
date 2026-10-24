@@ -119,3 +119,84 @@ void cadastrar() {
         sleep(1);
     }
 }
+
+void login() {
+    char cpf[20];
+    char senha[10];
+
+    char *cpr;
+    int len;
+    int erro;
+    int continua = 1;
+
+    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+    
+    if (continua) {
+        do {
+            erro = 0;
+            printf("Informe seu CPF (apenas numeros): ");
+            fgets(cpf, sizeof(cpf), stdin);
+            cpf[strcspn(cpf, "\n")] = 0;
+            
+            if (strcmp(cpf, "SAIR") == 0) {
+                continua = 0;
+                break;
+            }
+            
+            len = strlen(cpf);
+
+            if (len != 11) {
+                printErro("O CPF deve ter 11 digitos. Tente novamente.\n");
+                erro = 1;
+            } else {
+                for (int i = 0; i < len; i++) {
+                    if (!isdigit(cpf[i])) {
+                        printErro("Digite apenas os numeros do CPF. Tente novamente.\n");
+                        erro = 1;
+                        break;
+                    }
+                }
+            }
+        } while (erro);
+    }
+    
+    if (continua) {
+        do {
+            erro = 0;
+            printf("Informe sua senha (6 numeros): ");
+            fgets(senha, sizeof(senha), stdin);
+            senha[strcspn(senha, "\n")] = 0;
+            
+            if (strcmp(senha, "SAIR") == 0) {
+                continua = 0;
+                break;
+            }
+            
+            len = strlen(senha);
+            
+            if (len != 6) {
+                printErro("Sua senha deve ter 6 digitos. Tente novamente.\n");
+                erro = 1;
+            } else {
+                for (int i = 0; i < len; i++) {
+                    if (!isdigit(senha[i])) {
+                        printErro("Sua senha deve ter apenas numeros. Tente novamente.\n");
+                        erro = 1;
+                        break;
+                    }
+                }
+            }
+    
+        } while (erro);
+    }
+
+    if (continua) {
+        printf("Autenticando...");
+        sleep(1);
+
+        if (authUser(cpf, senha) == 1) {
+            printf(GRN " Bem-vindo!");
+            sleep(1);
+        }
+    }
+}
