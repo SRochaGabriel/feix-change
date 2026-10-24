@@ -134,7 +134,7 @@ int checkCpfUnique(char *cpf) {
     return result;
 }
 
-int authUser(char *cpf, char *senha) {
+int authUser(char *nome, char *cpf, char *senha) {
     char nome_compare[120];
     char cpf_compare[12];
     char senha_compare[7];
@@ -147,7 +147,6 @@ int authUser(char *cpf, char *senha) {
     FILE *f = fopen("data/usuario.txt", "r");
 
     if (f == NULL) {
-        result = 0;
         printErro("Erro ao acessar base de dados.");
     } else {
         while(fgets(linha, sizeof(linha), f)) {    
@@ -159,10 +158,7 @@ int authUser(char *cpf, char *senha) {
             pos = strcspn(dados, ";");
             pos++;
             strncpy(cpf_compare, dados, 11);
-            strncpy(senha_compare, dados + pos, 6);
-            
-            printf("NOME: %s\n", nome_compare);
-            sleep(3);
+            strncpy(senha_compare, dados + pos, 7);
             
             if (strcmp(cpf_compare, cpf) == 0 && strcmp(senha_compare, senha) == 0) {
                 result = 1;
@@ -175,6 +171,8 @@ int authUser(char *cpf, char *senha) {
         if (!result) {
             printErro("Informacoes de login invalidas. Tente novamente.");
             sleep(2);
+        } else {
+            strcpy(nome, nome_compare);
         }
         fclose(f);
     }

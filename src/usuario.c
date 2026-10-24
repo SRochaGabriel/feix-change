@@ -9,10 +9,34 @@
 #include "ANSI-color-codes.h"
 
 typedef struct _usuario {
-    char nome[100];
-    char cpf[11];
-    char senha[6];
+    char nome[101];
+    char cpf[12];
+    char senha[7];
 } Usuario;
+
+Usuario *inicializaUser() {
+    static Usuario user = {0};
+
+    return &user;
+}
+
+const char *getUsrNome(const Usuario *user) {
+    return user->nome;
+}
+
+const char *getUsrCpf(const Usuario *user) {
+    return user->cpf;
+}
+
+const char *getUsrSenha(const Usuario *user) {
+    return user->senha;
+}
+
+void setUsr(Usuario *user, const char *nome, const char *cpf, const char *senha) {
+    strcpy(user->nome, nome);
+    strcpy(user->cpf, cpf);
+    strcpy(user->senha, senha);
+}
 
 void cadastrar() {
     char nome[101];
@@ -120,7 +144,8 @@ void cadastrar() {
     }
 }
 
-void login() {
+void login(Usuario *user) {
+    char nome[150];
     char cpf[20];
     char senha[10];
 
@@ -194,7 +219,8 @@ void login() {
         printf("Autenticando...");
         sleep(1);
 
-        if (authUser(cpf, senha) == 1) {
+        if (authUser(nome, cpf, senha) == 1) {
+            setUsr(user, nome, cpf, senha);
             printf(GRN " Bem-vindo!");
             sleep(1);
         }

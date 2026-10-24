@@ -9,8 +9,8 @@ int main() {
     int auth = 0;
     int running = 1;
     char opt = '~';
+    Usuario *user = inicializaUser();
     
-    // inicializacao de ambiente
     initDirData();
     initDataFiles();
 
@@ -20,8 +20,9 @@ int main() {
             if (erro) {
                 printErro("Opcao selecionada invalida. Tente novamente.");
             }
+            printf("%s --- %s --- %s \n", getUsrCpf(user), getUsrNome(user), getUsrSenha(user));
             opt = getOpt();
-            navegacao(&tela, opt, &running, &auth, &erro);
+            navegacao(&tela, opt, &running, &auth, &erro, user);
         }
     }
 

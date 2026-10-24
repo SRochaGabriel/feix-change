@@ -44,7 +44,7 @@ void printTela(int tela, char *opt) {
     }
 }
 
-void navegacao(int *tela, char opt, int *running, int *auth, int *erro) {
+void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario *user) {
     if (opt == 'S') {
         if (*auth) {
             *auth = 0;
@@ -57,7 +57,7 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro) {
         switch (*tela) {
             case 1:
                 if (opt == 'L') {
-                    login();
+                    login(user);
                 } else if (opt == 'C') {
                     cadastrar();
                 } else {
