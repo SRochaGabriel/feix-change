@@ -225,6 +225,8 @@ int login(int *auth, Usuario *user) {
             *auth = 1;
             printf(GRN " Bem-vindo!");
             sleep(1);
+        } else {
+            continua = 0;
         }
     }
 

@@ -78,12 +78,13 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                 if (opt == 'A') {
                     updateCotacoes();
                 }
+                break;
         }
     }
 }
 
 void printErro(char *err_detail) {
-    char err_msg[100] = RED "ERRO: " CRESET;
+    char err_msg[200] = RED "ERRO: " CRESET;
     
     strcat(err_msg, err_detail);
     fprintf(stderr, err_msg);

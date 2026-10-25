@@ -308,7 +308,8 @@ int authUser(char *nome, char *cpf, char *senha) {
             }
         }
         
-        if (!result) {
+        if (result == 0) {
+            printf("\n");
             printErro("Informacoes de login invalidas. Tente novamente.");
             sleep(2);
         } else {
