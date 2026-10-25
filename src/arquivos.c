@@ -106,6 +106,7 @@ void updateCotacoes() {
             exit(EXIT_FAILURE);
         }
     } else {
+        remove("data/cotacaoUPDT.txt");
         printf(YEL "LEMBRETE: " CRESET "Nossas cotacoes sao atualizadas diariamente, se estao na data de hoje, nao e necessario tentar atualizar as cotacoes.\n");
         sleep(3);        
     }
@@ -204,7 +205,6 @@ void initDataFiles () {
 }
 
 void insertNovoUsuario(char *nome, char *cpf, char *senha) {
-    char registro[200];
     int erro = 0;
     FILE *f = fopen(USR_PATH, "a");
 
@@ -215,14 +215,7 @@ void insertNovoUsuario(char *nome, char *cpf, char *senha) {
     }
 
     if (!erro) {
-        strcat(nome, ";");
-        strcat(cpf, ";");
-
-        strcpy(registro, nome);
-        strcat(registro, cpf);
-        strcat(registro, senha);
-
-        fprintf(f, "%s\n", registro);
+        fprintf(f, "%s;%s;%s\n", nome, cpf, senha);
     }
 
     fclose(f);
