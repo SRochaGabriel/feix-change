@@ -18,7 +18,7 @@
 void initCotacao(FILE *f) {
     char *data_str;
     char info[100];
-    const char *cotacoes_ini[] = {"BRL;0.0;", "BTC;409672.99;", "ETH;11938.4;", "XRP;6.44;"};
+    const char *cotacoes_ini[] = {"BTC;409672.99;", "ETH;11938.4;", "XRP;6.44;"};
     time_t data = time(NULL);
 
     snprintf(data_str, 100, "%ld", data);
@@ -33,8 +33,8 @@ void initCotacao(FILE *f) {
 void exibeCotacoes() {
     int pos = 0;
     char nome[4] = "";
-    char cotacao[30] = "";
-    char ultimo_update[30] = "";
+    char cotacao[20] = "";
+    char ultimo_update[20] = "";
     char data[50];
     char linha[50];
     FILE *f = fopen(COT_PATH, "r");
@@ -48,20 +48,18 @@ void exibeCotacoes() {
             pos = strcspn(linha, ";");
             strncpy(nome, linha, pos);
 
-            if (strcmp(nome, "BRL") != 0) {
-                strncpy(data, linha + pos, 50);
-    
-                pos = strcspn(data + 1, ";");
-                strncpy(cotacao, data + 1, pos);
-                
-                if (strlen(ultimo_update) == 0) {
-                    strncpy(ultimo_update, data + pos + 2, 11);
-                }
-                printf(YEL "|");
-                printf(" %s - %s ", nome, cotacao);
+            strncpy(data, linha + pos, 50);
 
-                memset(cotacao, 0, sizeof(cotacao));
+            pos = strcspn(data + 1, ";");
+            strncpy(cotacao, data + 1, pos);
+            
+            if (strlen(ultimo_update) == 0) {
+                strncpy(ultimo_update, data + pos + 2, 11);
             }
+            printf(YEL "|");
+            printf(" %s - %s ", nome, cotacao);
+
+            memset(cotacao, 0, sizeof(cotacao));
         }
 
         tempo = (time_t)atoi(ultimo_update);
@@ -230,35 +228,65 @@ int authUser(char *nome, char *cpf, char *senha) {
 }
 
 void updateCotacoes() {
-    // float variacao = getVariacao();
-    // int pos = 0;
-    // char nome[4];
-    // char cotacao[30];
-    // char ultimo_update[12];
-    // char data[50];
-    // char linha[50];
-    // FILE *f = fopen(COT_PATH, "r");
-    // FILE *f2 = fopen("/data/cotacoesUPDATE.txt", "w");
+    float variacao = getVariacao();
+    double cotacao_val;
+    int pos = 0;
+    int erro;
+    char nome[5] = "";
+    char cotacao[20] = "";
+    char ultimo_update[20] = "";
+    char data[50];
+    char linha[50];
+    FILE *f = fopen(COT_PATH, "r");
+    FILE *f2 = fopen("data/cotacaoUPDT.txt", "w");
+    time_t ultimo_tempo;
+    time_t agora = time(NULL);
 
-    // if (f == NULL || f2 == NULL){
-    //     printErro("Erro ao acessar base de dados.");
-    // } else {
-    //     while(fgets(linha, sizeof(linha), f)) {    
-    //         pos = strcspn(linha, ";");
-    //         strncpy(nome, linha, pos);
+    if (f == NULL || f2 == NULL) {
+        printErro("Erro ao acessar base de dados.");
+    } else {
+        while(fgets(linha, sizeof(linha), f)) {    
+            pos = strcspn(linha, ";");
+            pos++;
+            strncpy(nome, linha, pos);
+            
+            strncpy(data, linha + pos, 50);
+            
+            pos = strcspn(data, ";");
+            pos++;
+            strncpy(cotacao, data, pos);
+            
+            strncpy(ultimo_update, data + pos, 11);
+            
+            ultimo_tempo = (time_t)atoi(ultimo_update);
+            
+            if (difftime(agora, ultimo_tempo) > 86400) {
+                cotacao_val = atof(cotacao);
+                cotacao_val += (cotacao_val * variacao / 100);
+                snprintf(cotacao, 20, "%.2lf", cotacao_val);
+                strcat(cotacao, ";");
+            }
 
-    //         if (strcmp(nome, "BRL") != 0) {
-    //             strncpy(data, linha + pos, 50);
-    
-    //             pos = strcspn(data + 1, ";");
-    //             strncpy(cotacao, data + 1, pos);
-    //             strncpy(ultimo_update, data + pos + 1, 11);
+            snprintf(ultimo_update, 20, "%ld", agora);
+            fprintf(f2, "%s%s%s\n", nome, cotacao, ultimo_update);
 
-    //             memset(cotacao, 0, sizeof(cotacao));
-    //         }
-    //     }
-    //     printf("|\n" CRESET);
+            memset(cotacao, 0, sizeof(cotacao));
+        }
 
-    //     fclose(f);
-    // }
+        fclose(f);
+        fclose(f2);
+    }
+
+    if (remove(COT_PATH) != 0) {
+        erro = 1;
+    }
+
+    if (rename("data/cotacaoUPDT.txt", COT_PATH) != 0) {
+        erro = 1;
+    }
+
+    if (erro == 1) {
+        printErro("Não foi possível atualizar corretamente a cotação.");
+        exit(EXIT_FAILURE);
+    }
 }
