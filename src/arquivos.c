@@ -204,6 +204,26 @@ void initDataFiles () {
     }
 }
 
+int insertNovaCarteira(char *cpf) {
+    FILE *f = fopen(CART_PATH, "a");
+    int erro = 0;
+    char *saldoInicial = "0.0";
+
+    if (f == NULL) {
+        printErro("Não foi possível criar a carteira do usuário.");
+        erro = 1;
+    }
+
+    // cpf + saldos para real, btc, eth e xrp
+    if (erro == 0) {
+        fprintf(f, "%s;%s;%s;%s;%s\n", cpf, saldoInicial, saldoInicial, saldoInicial, saldoInicial);
+
+        fclose(f);
+    }
+
+    return erro;
+}
+
 void insertNovoUsuario(char *nome, char *cpf, char *senha) {
     int erro = 0;
     FILE *f = fopen(USR_PATH, "a");
@@ -211,10 +231,13 @@ void insertNovoUsuario(char *nome, char *cpf, char *senha) {
     if (f == NULL) {
         erro = 1;
         printErro("Não foi possível inserir o usuário.");
-        fclose(f);
     }
 
-    if (!erro) {
+    if (erro == 0) {
+        erro = insertNovaCarteira(cpf);
+    }
+
+    if (erro == 0) {
         fprintf(f, "%s;%s;%s\n", nome, cpf, senha);
     }
 
@@ -247,7 +270,6 @@ int checkCpfUnique(char *cpf) {
 
         fclose(f);
     }
-
 
     return result;
 }

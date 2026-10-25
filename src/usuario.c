@@ -42,10 +42,9 @@ void cadastrar() {
     char nome[101];
     char cpf[20];
     char senha[10];
-
     char *cpr;
     int len;
-    int erro;
+    int erro = 0;
     int continua = 1;
 
     printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
@@ -66,13 +65,13 @@ void cadastrar() {
         
         if (len > 100) {
             printErro("Seu nome ultrapassa os limites de caracteres. Tente novamente.");
-            erro = 0;
+            erro = 1;
         } else if (cpr != NULL) {
             printErro("Informe seu nome sem utilizar caracteres especiais como ';'. Tente novamente.");
-            erro = 0;
+            erro = 1;
         }
         
-    } while (erro);
+    } while (erro == 1);
     
     if (continua) {
         do {
@@ -100,7 +99,7 @@ void cadastrar() {
                     }
                 }
             }
-        } while (erro);
+        } while (erro == 1);
     }
     
     if (continua) {
@@ -130,12 +129,14 @@ void cadastrar() {
                 }
             }
     
-        } while (erro);
+        } while (erro == 1);
     }
 
     if (continua) {
         continua = checkCpfUnique(cpf);
+    }
 
+    if (continua) {
         insertNovoUsuario(nome, cpf, senha);
         printf("Cadastrando usuario...");
         sleep(2);
