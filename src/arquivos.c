@@ -108,7 +108,7 @@ void updateCotacoes() {
     } else {
         remove("data/cotacaoUPDT.txt");
         printf(YEL "LEMBRETE: " CRESET "Nossas cotacoes sao atualizadas diariamente, se estao na data de hoje, nao e necessario tentar atualizar as cotacoes.\n");
-        sleep(3);        
+        sleep(2);        
     }
 }
 
