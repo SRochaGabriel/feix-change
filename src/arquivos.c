@@ -30,6 +30,75 @@ void initCotacao(FILE *f) {
     }
 }
 
+float getVariacao() {
+    srand(time(NULL));
+    return (rand() / (float)RAND_MAX) + (rand() % 10 - 5);
+}
+
+void updateCotacoes() {
+    float variacao = getVariacao();
+    double cotacao_val;
+    int pos = 0;
+    int erro;
+    char nome[5] = "";
+    char cotacao[20] = "";
+    char ultimo_update[20] = "";
+    char data[50];
+    char linha[50];
+    FILE *f = fopen(COT_PATH, "r");
+    FILE *f2 = fopen("data/cotacaoUPDT.txt", "w");
+    time_t ultimo_tempo;
+    time_t agora = time(NULL);
+
+    if (f == NULL || f2 == NULL) {
+        printErro("Erro ao acessar base de dados.");
+    } else {
+        while(fgets(linha, sizeof(linha), f)) {    
+            pos = strcspn(linha, ";");
+            pos++;
+            strncpy(nome, linha, pos);
+            
+            strncpy(data, linha + pos, 50);
+            
+            pos = strcspn(data, ";");
+            pos++;
+            strncpy(cotacao, data, pos);
+            
+            strncpy(ultimo_update, data + pos, 11);
+            
+            ultimo_tempo = (time_t)atoi(ultimo_update);
+            
+            if (difftime(agora, ultimo_tempo) > 86400) {
+                cotacao_val = atof(cotacao);
+                cotacao_val += (cotacao_val * variacao / 100);
+                snprintf(cotacao, 20, "%.2lf", cotacao_val);
+                strcat(cotacao, ";");
+            }
+
+            snprintf(ultimo_update, 20, "%ld", agora);
+            fprintf(f2, "%s%s%s\n", nome, cotacao, ultimo_update);
+
+            memset(cotacao, 0, sizeof(cotacao));
+        }
+
+        fclose(f);
+        fclose(f2);
+    }
+
+    if (remove(COT_PATH) != 0) {
+        erro = 1;
+    }
+
+    if (rename("data/cotacaoUPDT.txt", COT_PATH) != 0) {
+        erro = 1;
+    }
+
+    if (erro == 1) {
+        printErro("Não foi possível atualizar corretamente a cotação.");
+        exit(EXIT_FAILURE);
+    }
+}
+
 void exibeCotacoes() {
     int pos = 0;
     char nome[4] = "";
@@ -111,6 +180,8 @@ void initDataFiles () {
             }
 
             fclose(f);
+        } else if (i == 3) {
+            updateCotacoes();
         }
     }
 
@@ -118,11 +189,6 @@ void initDataFiles () {
         fprintf(stderr, RED "ERRO: " CRESET "Não foi possível criar o arquivo %s. %s\n", file_erro, strerror(errno));
         exit(EXIT_FAILURE);
     }
-}
-
-float getVariacao() {
-    srand(time(NULL));
-    return (rand() / (float)RAND_MAX) + (rand() % 10 - 5);
 }
 
 void insertNovoUsuario(char *nome, char *cpf, char *senha) {
@@ -225,68 +291,4 @@ int authUser(char *nome, char *cpf, char *senha) {
     }
 
     return result;
-}
-
-void updateCotacoes() {
-    float variacao = getVariacao();
-    double cotacao_val;
-    int pos = 0;
-    int erro;
-    char nome[5] = "";
-    char cotacao[20] = "";
-    char ultimo_update[20] = "";
-    char data[50];
-    char linha[50];
-    FILE *f = fopen(COT_PATH, "r");
-    FILE *f2 = fopen("data/cotacaoUPDT.txt", "w");
-    time_t ultimo_tempo;
-    time_t agora = time(NULL);
-
-    if (f == NULL || f2 == NULL) {
-        printErro("Erro ao acessar base de dados.");
-    } else {
-        while(fgets(linha, sizeof(linha), f)) {    
-            pos = strcspn(linha, ";");
-            pos++;
-            strncpy(nome, linha, pos);
-            
-            strncpy(data, linha + pos, 50);
-            
-            pos = strcspn(data, ";");
-            pos++;
-            strncpy(cotacao, data, pos);
-            
-            strncpy(ultimo_update, data + pos, 11);
-            
-            ultimo_tempo = (time_t)atoi(ultimo_update);
-            
-            if (difftime(agora, ultimo_tempo) > 86400) {
-                cotacao_val = atof(cotacao);
-                cotacao_val += (cotacao_val * variacao / 100);
-                snprintf(cotacao, 20, "%.2lf", cotacao_val);
-                strcat(cotacao, ";");
-            }
-
-            snprintf(ultimo_update, 20, "%ld", agora);
-            fprintf(f2, "%s%s%s\n", nome, cotacao, ultimo_update);
-
-            memset(cotacao, 0, sizeof(cotacao));
-        }
-
-        fclose(f);
-        fclose(f2);
-    }
-
-    if (remove(COT_PATH) != 0) {
-        erro = 1;
-    }
-
-    if (rename("data/cotacaoUPDT.txt", COT_PATH) != 0) {
-        erro = 1;
-    }
-
-    if (erro == 1) {
-        printErro("Não foi possível atualizar corretamente a cotação.");
-        exit(EXIT_FAILURE);
-    }
 }
