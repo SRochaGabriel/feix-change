@@ -73,6 +73,11 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                 } else {
                     *erro = 1;
                 }
+                break;
+            case 2:
+                if (opt == 'A') {
+                    updateCotacoes();
+                }
         }
     }
 }

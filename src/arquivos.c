@@ -39,7 +39,8 @@ void updateCotacoes() {
     float variacao = getVariacao();
     double cotacao_val;
     int pos = 0;
-    int erro;
+    int erro = 0;
+    int atualiza = 0;
     char nome[5] = "";
     char cotacao[20] = "";
     char ultimo_update[20] = "";
@@ -69,14 +70,20 @@ void updateCotacoes() {
             ultimo_tempo = (time_t)atoi(ultimo_update);
             
             if (difftime(agora, ultimo_tempo) > 86400) {
+                atualiza = 1;
+            } else {
+                break;
+            }
+            
+            if (atualiza) {
                 cotacao_val = atof(cotacao);
                 cotacao_val += (cotacao_val * variacao / 100);
                 snprintf(cotacao, 20, "%.2lf", cotacao_val);
                 strcat(cotacao, ";");
-            }
 
-            snprintf(ultimo_update, 20, "%ld", agora);
-            fprintf(f2, "%s%s%s\n", nome, cotacao, ultimo_update);
+                snprintf(ultimo_update, 20, "%ld", agora);
+                fprintf(f2, "%s%s%s\n", nome, cotacao, ultimo_update);
+            }
 
             memset(cotacao, 0, sizeof(cotacao));
         }
@@ -85,17 +92,22 @@ void updateCotacoes() {
         fclose(f2);
     }
 
-    if (remove(COT_PATH) != 0) {
-        erro = 1;
-    }
-
-    if (rename("data/cotacaoUPDT.txt", COT_PATH) != 0) {
-        erro = 1;
-    }
-
-    if (erro == 1) {
-        printErro("Não foi possível atualizar corretamente a cotação.");
-        exit(EXIT_FAILURE);
+    if (atualiza) {
+        if (remove(COT_PATH) != 0) {
+            erro = 1;
+        }
+    
+        if (rename("data/cotacaoUPDT.txt", COT_PATH) != 0) {
+            erro = 1;
+        }
+    
+        if (erro == 1) {
+            printErro("Não foi possível atualizar corretamente a cotação.");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        printf(YEL "LEMBRETE: " CRESET "Nossas cotacoes sao atualizadas diariamente, se estao na data de hoje, nao e necessario tentar atualizar as cotacoes.\n");
+        sleep(3);        
     }
 }
 
