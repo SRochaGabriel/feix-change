@@ -6,3 +6,5 @@ const char *getUsrSenha(const Usuario *user);
 void cadastrar();
 int login(int *auth, Usuario *user);
 void logoff(Usuario *user);
+void exibeSaldo(const Usuario *user);
+int matchSenha(const char *senha);

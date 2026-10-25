@@ -7,6 +7,14 @@
 #include "usuario.h"
 #include "arquivos.h"
 
+void printErro(char *err_detail) {
+    char err_msg[200] = RED "ERRO: " CRESET;
+    
+    strcat(err_msg, err_detail);
+    fprintf(stderr, err_msg);
+    printf("\n");
+}
+
 void clearTela() {
     system("cls");
 }
@@ -36,7 +44,7 @@ char getOpt() {
     return opt;
 }
 
-void printTela(int tela) {
+void printTela(int tela, Usuario *user) {
     switch (tela) {
         case 1:
             clearTela();
@@ -49,10 +57,17 @@ void printTela(int tela) {
             exibeCotacoes();
             printf("\nC - Saldo    E - Extrato    D - Depositar    R - Saque    I - Comprar cripto    V - Vender cripto    A - Atualizar cotacao    S - Sair\n");
             break;
+        case 3:
+            clearTela();
+            printf(BLU "##########" YEL " MINHA CARTEIRA " BLU "##########\n" CRESET);
+            exibeSaldo(user);
+            printf("\nV - Voltar\n");
     }
 }
 
 void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario *user) {
+    int result;
+
     if (opt == 'S') {
         if (*auth) {
             *auth = 0;
@@ -77,16 +92,26 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
             case 2:
                 if (opt == 'A') {
                     updateCotacoes();
+                } else if (opt == 'C') {
+                    result = matchSenha(getUsrSenha(user));
+                    
+                    if (result == 1) {
+                        *tela = 3; // tela de saldo
+                    } else if (result == 0) {
+                        printErro("Senha invalida. Tente novamente.\n");
+                        sleep(1.5);
+                    }
+                } else {
+                    *erro = 1;
+                }
+                break;
+            case 3:
+                if (opt == 'V') {
+                    *tela = 2;
+                } else {
+                    *erro = 1;
                 }
                 break;
         }
     }
-}
-
-void printErro(char *err_detail) {
-    char err_msg[200] = RED "ERRO: " CRESET;
-    
-    strcat(err_msg, err_detail);
-    fprintf(stderr, err_msg);
-    printf("\n");
 }

@@ -15,10 +15,11 @@ int main() {
     initDataFiles();
 
     while (running == 1) {
-        printTela(tela);
+        printTela(tela, user);
         if (erro) {
             printErro("Opcao selecionada invalida. Tente novamente.");
         }
+        erro = 0;
         opt = getOpt();
         navegacao(&tela, opt, &running, &auth, &erro, user);
     }

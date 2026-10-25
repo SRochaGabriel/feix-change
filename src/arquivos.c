@@ -320,3 +320,52 @@ int authUser(char *nome, char *cpf, char *senha) {
 
     return result;
 }
+
+void getSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp) {
+    FILE *f = fopen(CART_PATH, "r");
+    int erro = 0;
+    int pos = 0;
+    int pos2 = 0;
+    char cpf_compare[12];
+    char linha[100];
+    char data[100];
+
+    if (f == NULL) {
+        printErro("Não foi possível recuperar o saldo");
+        erro = 1;
+    }
+
+    if (erro == 0) {
+        while (fgets(linha, sizeof(linha), f)) {
+            pos = strcspn(linha, ";");
+            strncpy(cpf_compare, linha, pos);
+            
+            if (strcmp(cpf_compare, cpf) == 0) {
+                pos++;
+                strncpy(data, linha + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(real, data, pos);
+                
+                pos++;
+                strncpy(data, data + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(btc, data, pos);
+                
+                pos++;
+                strncpy(data, data + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(eth, data, pos);
+                
+                pos++;
+                strncpy(data, data + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(xrp, data, pos);
+
+                sleep(3);
+                break;
+            }
+        }
+
+        fclose(f);
+    }
+}

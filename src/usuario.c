@@ -236,3 +236,69 @@ int login(int *auth, Usuario *user) {
 void logoff(Usuario *user) {
     memset(user, 0, sizeof(Usuario));
 }
+
+void exibeSaldo(const Usuario *user) {
+    char real[30] = "";
+    char btc[30] = "";
+    char eth[30] = "";
+    char xrp[30] = "";
+    char cpf[12] = "";
+
+    strcpy(cpf, getUsrCpf(user));
+
+    getSaldo(cpf, real, btc, eth, xrp);
+
+    printf(BLU "\n# Nome:" CRESET " %s " BLU "| CPF:" CRESET " %s\n", getUsrNome(user), cpf); 
+
+    printf(BLU "# R$:     " CRESET "%s\n", real);
+    printf(BLU "# BTC:    " CRESET "%s\n", btc);
+    printf(BLU "# ETH:    " CRESET "%s\n", eth);
+    printf(BLU "# XRP:    " CRESET "%s", xrp);
+}
+
+int matchSenha(const char *senha) {
+    char senha_compare[7];
+    int erro;
+    int len;
+    int result = 1;
+
+    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+
+    do {
+        erro = 0;
+        printf("Informe sua senha (6 numeros): ");
+        fgets(senha_compare, sizeof(senha_compare), stdin);
+        senha_compare[strcspn(senha_compare, "\n")] = 0;
+        
+        if (strcmp(senha_compare, "SAIR") == 0) {
+            result = 2;
+            break;
+        }
+        
+        len = strlen(senha_compare);
+        
+        if (len != 6) {
+            printErro("Sua senha deve ter 6 digitos. Tente novamente.\n");
+            erro = 1;
+        } else {
+            for (int i = 0; i < len; i++) {
+                if (!isdigit(senha_compare[i])) {
+                    printErro("Sua senha deve ter apenas numeros. Tente novamente.\n");
+                    erro = 1;
+                    break;
+                }
+            }
+        }
+
+    } while (erro == 1);
+
+    if (result == 1) {
+        if (strcmp(senha_compare, senha) != 0) {
+            result = 0;
+        }
+    }
+
+    while(getchar() != '\n');
+
+    return result;
+}
