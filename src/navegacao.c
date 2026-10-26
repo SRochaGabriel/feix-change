@@ -100,7 +100,12 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                     } else if (result == 0) {
                         printErro("Senha invalida. Tente novamente.\n");
                         sleep(1.5);
+                    } else if (result == 2) {
+                        *tela = 2;
                     }
+                } else if (opt == 'D') {
+                    deposito(user);
+                    *tela = 3;
                 } else {
                     *erro = 1;
                 }

@@ -6,3 +6,5 @@ int authUser(char *nome, char *cpf, char *senha);
 void exibeCotacoes();
 void updateCotacoes();
 void getSaldo(const char *cpf, char *real, char *btc, char *eth, char*xrp);
+void updateSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp);
+void insertTransacao(const char *cpf, char tipo, char *valor, char *moeda);

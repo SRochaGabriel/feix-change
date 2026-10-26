@@ -8,3 +8,4 @@ int login(int *auth, Usuario *user);
 void logoff(Usuario *user);
 void exibeSaldo(const Usuario *user);
 int matchSenha(const char *senha);
+void deposito();

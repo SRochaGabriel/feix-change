@@ -302,3 +302,35 @@ int matchSenha(const char *senha) {
 
     return result;
 }
+
+void deposito(Usuario *user) {
+    char valor[20] = "";
+    int erro = 0;
+    int len = 0;
+
+    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+
+    do {
+        erro = 0;
+        printf("Quanto deseja depositar? Informe como (99.99): R$ ");
+        fgets(valor, sizeof(valor), stdin);
+        valor[strcspn(valor, "\n")] = 0;
+        
+        if (strcmp(valor, "SAIR") == 0) {
+            break;
+        }
+        
+        len = strlen(valor);
+
+        for (int i = 0; i < len; i++) {
+            if (!isdigit(valor[i]) && (valor[i] != '.')) {
+                printErro("Digite o valor em reais que deseja depositar.\n");
+                erro = 1;
+                break;
+            }
+        }
+    } while (erro == 1);
+
+    insertTransacao(getUsrCpf(user), '+', valor, "BRL");
+    updateSaldo(getUsrCpf(user), valor, "", "", "");
+}

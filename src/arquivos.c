@@ -16,12 +16,12 @@
 #define TRNS_PATH "data/transacao.txt"
 
 void initCotacao(FILE *f) {
-    char *data_str;
+    char data_str[20];
     char info[100];
     const char *cotacoes_ini[] = {"BTC;409672.99;", "ETH;11938.4;", "XRP;6.44;"};
     time_t data = time(NULL);
 
-    snprintf(data_str, 100, "%ld", data);
+    snprintf(data_str, sizeof(data_str), "%ld", data);
 
     for (int i = 0; i < 4; i++) {
         strcpy(info, cotacoes_ini[i]);
@@ -108,7 +108,7 @@ void updateCotacoes() {
     } else {
         remove("data/cotacaoUPDT.txt");
         printf(YEL "LEMBRETE: " CRESET "Nossas cotacoes sao atualizadas diariamente, se estao na data de hoje, nao e necessario tentar atualizar as cotacoes.\n");
-        sleep(2);        
+        sleep(1.5);        
     }
 }
 
@@ -360,12 +360,118 @@ void getSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp) {
                 strncpy(data, data + pos, 100);
                 pos = strcspn(data, ";");
                 strncpy(xrp, data, pos);
-
-                sleep(3);
                 break;
             }
         }
 
+        fclose(f);
+    }
+}
+
+void updateSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp) {
+    FILE *f = fopen(CART_PATH, "r");
+    FILE *f2 = fopen("data/carteiraUPDT.txt", "w");
+    int erro = 0;
+    int pos = 0;
+    int pos2 = 0;
+    char cpf_compare[12];
+    char linha[100];
+    char data[100];
+    char BRL[20] = "";
+    char BTC[20] = "";
+    char ETH[20] = "";
+    char XRP[20] = "";
+    double brl_d = 0;
+    double btc_d = 0;
+    double eth_d = 0;
+    double xrp_d = 0;
+    double new_valor = 0;
+
+    if (f == NULL) {
+        printErro("Não foi possível atualizar o saldo");
+        erro = 1;
+    }
+
+    if (erro == 0) {
+        while (fgets(linha, sizeof(linha), f)) {
+            pos = strcspn(linha, ";");
+            strncpy(cpf_compare, linha, pos);
+
+            if (strcmp(cpf_compare, cpf) == 0) {
+                pos++;
+                strncpy(data, linha + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(BRL, data, pos);
+                pos++;
+                strncpy(data, data + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(BTC, data, pos);
+                pos++;
+                strncpy(data, data + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(ETH, data, pos);
+                pos++;
+                strncpy(data, data + pos, 100);
+                pos = strcspn(data, ";");
+                strncpy(XRP, data, pos);
+
+                if (strlen(real) > 0) {
+                    brl_d = atof(BRL);
+                    new_valor = atof(real);
+                    brl_d += new_valor;
+                    snprintf(BRL, sizeof(BRL), "%.2lf", brl_d);
+                }
+                
+                if (strlen(btc) > 0) {
+                    btc_d = atof(BTC);
+                    new_valor = atof(real);
+                    btc_d += new_valor;
+                    snprintf(BTC, sizeof(BTC), "%.2lf", btc_d);
+                }
+                
+                if (strlen(eth) > 0) {
+                    eth_d = atof(ETH);
+                    new_valor = atof(real);
+                    eth_d += new_valor;
+                    snprintf(ETH, sizeof(ETH), "%.2lf", eth_d);
+                }
+                
+                if (strlen(xrp) > 0) {
+                    xrp_d = atof(XRP);
+                    new_valor = atof(real);
+                    xrp_d += new_valor;
+                    snprintf(XRP, sizeof(XRP), "%.2lf", xrp_d);
+                }
+
+                fprintf(f2, "%s;%s;%s;%s;%s", cpf_compare, BRL, BTC, ETH, XRP);
+            } else {
+                fprintf(f2, "%s", linha);
+            }
+        }
+
+        fclose(f);
+        fclose(f2);
+        remove(CART_PATH);
+        rename("data/carteiraUPDT.txt", CART_PATH);
+    }
+}
+
+void insertTransacao(const char *cpf, char tipo, char *valor, char *moeda) {
+    FILE *f = fopen(TRNS_PATH, "a");
+    time_t data = time(NULL);
+    int erro = 0;
+    char data_str[20];
+
+    snprintf(data_str, sizeof(data_str), "%ld", data);
+    printf("%s;%s;%c;%s;%s\n", cpf, data_str, tipo, valor, moeda);
+
+    if (f == NULL) {
+        printErro("Não foi possível acessar a base de dados");
+        erro = 1;
+    }
+
+    if (erro == 0) {
+        fprintf(f, "%s;%s;%c;%s;%s\n", cpf, data_str, tipo, valor, moeda);
         fclose(f);
     }
 }
