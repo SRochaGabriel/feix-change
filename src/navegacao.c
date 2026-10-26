@@ -104,8 +104,13 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                         *tela = 2;
                     }
                 } else if (opt == 'D') {
-                    deposito(user);
-                    *tela = 3;
+                    if (deposito(user) == 1) {
+                        *tela = 3;
+                    }
+                } else if (opt == 'R') {
+                    if (saque(user) == 1) {
+                        *tela = 3;
+                    }
                 } else {
                     *erro = 1;
                 }

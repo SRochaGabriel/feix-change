@@ -303,10 +303,15 @@ int matchSenha(const char *senha) {
     return result;
 }
 
-void deposito(Usuario *user) {
+int deposito(Usuario *user) {
     char valor[20] = "";
-    int erro = 0;
+    char cpf[12] = "";
+    double valor_d;
+    int erro;
     int len = 0;
+    int result = 1;
+
+    strcpy(cpf, getUsrCpf(user));
 
     printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
 
@@ -317,6 +322,7 @@ void deposito(Usuario *user) {
         valor[strcspn(valor, "\n")] = 0;
         
         if (strcmp(valor, "SAIR") == 0) {
+            result = 0;
             break;
         }
         
@@ -329,8 +335,86 @@ void deposito(Usuario *user) {
                 break;
             }
         }
+
+        if (erro == 0) {
+            valor_d = atof(valor);
+            
+            if (valor_d <= 0) {
+                erro = 1;
+                printErro("Voce deve depositar uma quantia valida.\n");
+            }
+        }
     } while (erro == 1);
 
-    insertTransacao(getUsrCpf(user), '+', valor, "BRL");
-    updateSaldo(getUsrCpf(user), valor, "", "", "");
+    if (result == 1) {
+        snprintf(valor, sizeof(valor), "%.2lf", valor_d);
+        insertTransacao(cpf, '+', valor, "BRL");
+        updateSaldo(cpf, valor, "", "", "");
+    }
+
+    return result;
+}
+
+int saque(Usuario *user) {
+    int erro;
+    int len = 0;
+    int result = 1;
+    double real_d;
+    double valor_d;
+    char valor[30] = "";
+    char real[30] = "";
+    char btc[30] = "";
+    char eth[30] = "";
+    char xrp[30] = "";
+    char cpf[12] = "";
+
+    strcpy(cpf, getUsrCpf(user));
+    
+    getSaldo(cpf, real, btc, eth, xrp);
+
+    real_d = atof(real);
+
+    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+
+    do {
+        erro = 0;
+        printf("Quanto deseja sacar? Informe como (99.99): R$ ");
+        fgets(valor, sizeof(valor), stdin);
+        valor[strcspn(valor, "\n")] = 0;
+        
+        if (strcmp(valor, "SAIR") == 0) {
+            result = 0;
+            break;
+        }
+        
+        len = strlen(valor);
+
+        for (int i = 0; i < len; i++) {
+            if (!isdigit(valor[i]) && (valor[i] != '.')) {
+                printErro("Digite o valor em reais que deseja depositar.\n");
+                erro = 1;
+                break;
+            }
+        }    
+
+        if (erro == 0) {
+            valor_d = atof(valor);
+    
+            if (real_d - valor_d < 0 || valor_d <= 0) {
+                erro = 1;
+                printErro("Nao e possivel sacar esse valor.\n");
+            }
+        }
+    } while (erro == 1);
+
+    if (result == 1) {
+        snprintf(valor, sizeof(valor), "%.2lf", valor_d);
+        insertTransacao(cpf, '-', valor, "BRL");
+        
+        valor_d *= -1;
+        snprintf(valor, sizeof(valor), "%.2lf", valor_d);
+        updateSaldo(cpf, valor, "", "", "");
+    }
+
+    return result;
 }
