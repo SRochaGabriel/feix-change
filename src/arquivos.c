@@ -15,6 +15,26 @@
 #define CART_PATH "data/carteira.txt"
 #define TRNS_PATH "data/transacao.txt"
 
+int contaLinhas(char *filename) {
+    FILE *f = fopen(filename, "r");
+    char linha[150] = "";
+    int erro = 0;
+    int i = 0;
+
+    if (f == NULL) {
+        printErro("Não foi possível recuperar o extrato.");
+        erro = 1;
+    }
+
+    if (erro == 0) {
+        while (fgets(linha, sizeof(linha), f)) {
+            i++;
+        }
+    }
+
+    return i;
+}
+
 void initCotacao(FILE *f) {
     char data_str[20];
     char info[100];
@@ -33,6 +53,31 @@ void initCotacao(FILE *f) {
 float getVariacao() {
     srand(time(NULL));
     return (rand() / (float)RAND_MAX) + (rand() % 10 - 5);
+}
+
+void getCotacao(char *moeda, char *cotacao) {
+    FILE *f = fopen(COT_PATH, "r");
+    int erro = 0;
+    int pos = 0;
+    char moeda_nome[4] = "";
+    char linha[200] = "";
+    
+    if (f == NULL) {
+        printErro("Não foi possível recuperar dados de cotação de criptomoeda.");
+        erro = 1;
+    }
+
+    if (erro == 0) {
+        while (fgets(linha, sizeof(linha), f)) {
+            strncpy(moeda_nome, linha, 3);
+
+            if (strcmp(moeda_nome, moeda) == 0) {
+                pos = strcspn(linha + 4, ";");
+                strncpy(cotacao, linha + 4, pos);
+            }
+        }
+        fclose(f);
+    }
 }
 
 void updateCotacoes() {
@@ -473,5 +518,32 @@ void insertTransacao(const char *cpf, char tipo, char *valor, char *moeda) {
     if (erro == 0) {
         fprintf(f, "%s;%s;%c;%s;%s\n", cpf, data_str, tipo, valor, moeda);
         fclose(f);
+    }
+}
+
+void getTransacoes(const char *cpf, int l, char linhas[l][200]) {
+    FILE *f = fopen(TRNS_PATH, "r");
+    int i = 0;
+    int erro = 0;
+    int pos = 0;
+    char cpf_compare[12] = "";
+    char linha[200] = "";
+
+    if (f == NULL) {
+        printErro("Não foi possível recuperar o extrato.");
+        erro = 1;
+    }
+
+    if (erro == 0) {
+        while (fgets(linha, sizeof(linha), f)) {
+            pos = strcspn(linha, ";");
+            strncpy(cpf_compare, linha, pos);
+            
+
+            if (strcmp(cpf_compare, cpf) == 0) {
+                strcpy(linhas[i], linha);
+                i++;
+            }
+        }
     }
 }

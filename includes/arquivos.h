@@ -8,3 +8,6 @@ void updateCotacoes();
 void getSaldo(const char *cpf, char *real, char *btc, char *eth, char*xrp);
 void updateSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp);
 void insertTransacao(const char *cpf, char tipo, char *valor, char *moeda);
+int contaLinhas(char *filename);
+void getTransacoes(const char *cpf, int l, char linhas[l][200]);
+void getCotacao(char *moeda, char *cotacao);
