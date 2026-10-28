@@ -59,9 +59,16 @@ void printTela(int tela, Usuario *user) {
             break;
         case 3:
             clearTela();
-            printf(BLU "##########" YEL " MINHA CARTEIRA " BLU "##########\n" CRESET);
+            printf(BLU "##############################" YEL " MINHA CARTEIRA " BLU "##############################\n" CRESET);
             exibeSaldo(user);
             printf("\nV - Voltar\n");
+            break;
+        case 4:
+            clearTela();
+            printf(BLU "##############################" YEL " EXTRATO " BLU "##############################\n" CRESET);
+            exibeExtrato(user);
+            printf("\nV - Voltar\n");
+            break;
     }
 }
 
@@ -94,6 +101,7 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                     updateCotacoes();
                 } else if (opt == 'C') {
                     result = matchSenha(getUsrSenha(user));
+                    while(getchar() != '\n');
                     
                     if (result == 1) {
                         *tela = 3; // tela de saldo
@@ -111,11 +119,24 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                     if (saque(user) == 1) {
                         *tela = 3;
                     }
+                } else if (opt == 'E') {
+                    result = matchSenha(getUsrSenha(user));
+                    while(getchar() != '\n');
+                    
+                    if (result == 1) {
+                        *tela = 4; // tela de extrato
+                    } else if (result == 0) {
+                        printErro("Senha invalida. Tente novamente.\n");
+                        sleep(1.5);
+                    } else if (result == 2) {
+                        *tela = 2;
+                    }
                 } else {
                     *erro = 1;
                 }
                 break;
             case 3:
+            case 4:
                 if (opt == 'V') {
                     *tela = 2;
                 } else {

@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include <unistd.h>
 #include "arquivos.h"
 #include "navegacao.h"
@@ -298,8 +299,6 @@ int matchSenha(const char *senha) {
         }
     }
 
-    while(getchar() != '\n');
-
     return result;
 }
 
@@ -417,4 +416,77 @@ int saque(Usuario *user) {
     }
 
     return result;
+}
+
+void exibeExtrato(Usuario *user) {
+    int l = contaLinhas("data/transacao.txt");
+    int pos = 0;
+    char linhas[l][200];
+    char tipo = 'o';
+    char data_str[100] = "";
+    char valor[30] = "";
+    char moeda[4] = "";
+    char cotacao[30] =  "";
+    char taxa[10] = "";
+    time_t tempo;
+    struct tm *tmp;
+
+    getTransacoes(getUsrCpf(user), l, linhas);
+
+    printf(BLU "\nNome: " CRESET "%s\n", getUsrNome(user));
+    printf(BLU "CPF: " CRESET "%s\n\n", getUsrCpf(user));
+
+    for (int i = 0; i < l; i++) {
+        // pegando os campos de transacoes
+        strncpy(linhas[i], linhas[i] + 12, sizeof(linhas[i]) - 1);
+        
+        pos = strcspn(linhas[i], ";");
+        strncpy(data_str, linhas[i], pos);
+        pos++;
+        strncpy(linhas[i], linhas[i] + pos, sizeof(linhas[i]));
+        
+        tipo = linhas[i][0];
+        pos = strcspn(linhas[i], ";");
+        pos++;
+        strncpy(linhas[i], linhas[i] + pos, sizeof(linhas[i]));
+        
+        pos = strcspn(linhas[i], ";");
+        strncpy(valor, linhas[i], pos);
+        pos++;
+        strncpy(moeda, linhas[i] + pos, 3);
+        // --
+
+        if (strcmp(moeda, "BRL") == 0) {
+            strcpy(cotacao, "0.0");
+            strcpy(taxa, "Não há");
+        } else {
+            getCotacao(moeda, cotacao);
+        }
+
+        if (tipo = '+') {
+            if (strcmp(moeda, "BTC") == 0) {
+                strcpy(taxa, "2%");
+            } else if (strcmp(moeda, "ETH") == 0) {
+                strcpy(taxa, "1%");
+            } else if (strcmp(moeda, "XRP") == 0) {
+                strcpy(taxa, "1%");
+            }
+        } else {
+            if (strcmp(moeda, "BTC") == 0) {
+                strcpy(taxa, "3%");
+            } else if (strcmp(moeda, "ETH") == 0) {
+                strcpy(taxa, "2%");
+            } else if (strcmp(moeda, "XRP") == 0) {
+                strcpy(taxa, "1%");
+            }
+        }
+
+        // pegando a data da transação
+        tempo = (time_t)atoi(data_str);
+        tmp = localtime(&tempo);
+        strftime(data_str, sizeof(data_str), "%d/%m/%Y %H:%M", tmp);
+
+        // linha do extrato
+        printf(YEL "| %s | %c | %s | %s | CT: %s | TX: %s |\n" CRESET, data_str, tipo, valor, moeda, cotacao, taxa);
+    }
 }
