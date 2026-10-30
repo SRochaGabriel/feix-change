@@ -11,3 +11,4 @@ int matchSenha(const char *senha);
 int deposito(Usuario *user);
 int saque(Usuario *user);
 void exibeExtrato(Usuario *user);
+void compraCripto(const Usuario *user);

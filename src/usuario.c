@@ -303,7 +303,7 @@ int matchSenha(const char *senha) {
 }
 
 int deposito(Usuario *user) {
-    char valor[20] = "";
+    char valor[30] = "";
     char cpf[12] = "";
     double valor_d;
     int erro;
@@ -458,7 +458,7 @@ void exibeExtrato(Usuario *user) {
 
         if (strcmp(moeda, "BRL") == 0) {
             strcpy(cotacao, "0.0");
-            strcpy(taxa, "Não há");
+            strcpy(taxa, "Nao ha");
         } else {
             getCotacao(moeda, cotacao);
         }
@@ -488,5 +488,161 @@ void exibeExtrato(Usuario *user) {
 
         // linha do extrato
         printf(YEL "| %s | %c | %s | %s | CT: %s | TX: %s |\n" CRESET, data_str, tipo, valor, moeda, cotacao, taxa);
+    }
+}
+
+void compraCripto(const Usuario *user) {
+    char confirma = 'o';
+    char opcao[10] = "";
+    char valor[30] = "";
+    char cotacao[30] = "";
+    char brl_saldo[30] = "";
+    char btc_saldo[30] = "";
+    char eth_saldo[30] = "";
+    char xrp_saldo[30] = "";
+    char compra_saldo[30] = "";
+    char cpf[12] = "";
+    double brl_saldo_d = 0;
+    double compra_saldo_d = 0;
+    double valor_d = 0;
+    double cotacao_d = 0;
+    double custo = 0;
+    float taxa = 0;
+    int erro = 0;
+    int stop = 0;
+    int len = 0;
+
+    strcpy(cpf, getUsrCpf(user));
+
+    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+
+    do {
+        erro = 0;
+        printf("Informe qual moeda deseja comprar: \n");
+        printf("1 - BTC\n");
+        printf("2 - ETH\n");
+        printf("3 - XRP\n");
+        fgets(opcao, sizeof(opcao), stdin);
+        opcao[strcspn(opcao, "\n")] = 0;
+
+        if (strcmp(opcao, "SAIR") == 0) {
+            stop = 1;
+            break;
+        }
+        
+        if (stop == 0) {
+            if (strcmp(opcao, "1") != 0 && strcmp(opcao, "2") != 0 && strcmp(opcao, "3") != 0) {
+                printErro("Escolha uma opcao valida. Tente novamente.");
+                erro = 1;
+            }
+            
+            if (strcmp(opcao, "1") == 0) {
+                strcpy(opcao, "BTC");
+                taxa = 0.02;
+            } else if (strcmp(opcao, "2") == 0) {
+                strcpy(opcao, "ETH");
+                taxa = 0.01;
+            } else {
+                strcpy(opcao, "XRP");
+                taxa = 0.01;
+            }
+        }
+        
+        if (erro == 0 && stop == 0) {
+            
+        }
+    } while (erro == 1);
+    
+    if (stop == 0) {
+        printf("Essa compra incluira uma taxa de %.2f%.\n", taxa * 100);
+        do {
+            erro = 0;
+            printf("Informe quanto deseja comprar de %s em reais: R$ ", opcao);
+            fgets(valor, sizeof(valor), stdin);
+            valor[strcspn(valor, "\n")] = 0;
+            
+            if (strcmp(valor, "SAIR") == 0) {
+                stop = 1;
+                break;
+            }
+            
+            if (stop == 0) {
+                len = strlen(valor);
+                for (int i = 0; i < len; i++) {
+                    if (!isdigit(valor[i]) && (valor[i] != '.')) {
+                        printErro("Valor inserido invalido. Informe um numero.\n");
+                        erro = 1;
+                        break;
+                    }
+                }
+                
+                if (erro == 0) {
+                    getSaldo(cpf, brl_saldo, btc_saldo, eth_saldo, xrp_saldo);
+    
+                    valor_d = atof(valor);
+                    brl_saldo_d = atof(brl_saldo);
+                    custo = valor_d + (valor_d * taxa);
+    
+                    if (valor_d <= 0) {
+                        erro = 1;
+                        printErro("Voce deve informar uma quantia valida.\n");
+                    } else if (custo > brl_saldo_d) {
+                        erro = 1;
+                        printErro("Seu saldo atual nao e suficiente para realizar esta operacao. Tente novamente com um valor valido ou realize um deposito.");
+                    }
+                }
+            }
+        } while (erro == 1);
+    }
+
+    if (stop == 0) {
+        getCotacao(opcao, cotacao);
+        cotacao_d = atof(cotacao);
+        
+        compra_saldo_d += valor_d / cotacao_d;
+
+        do {
+            printf(YEL "O valor total dessa compra sera de R$ %.2lf por %lf %s. Deseja confirmar?\n" CRESET, custo, compra_saldo_d, opcao);
+            printf("S - Sim     N - Nao\n");
+            
+            confirma = toupper(getchar());
+            while(getchar() != '\n');
+            
+            if (confirma == 'N') {
+                stop = 1;
+                printf("Cancelando operacao...");
+                sleep(1);
+                break;
+            } else if (confirma != 'S') {
+                printErro("Selecione uma opcao valida.");
+                erro = 1;
+            }
+        } while (erro == 1);
+    }
+
+    if (stop == 0) {
+        printf("Confirmando transação...");
+        sleep(1);
+
+        snprintf(compra_saldo, sizeof(compra_saldo), "%lf", compra_saldo_d);
+
+        strcpy(btc_saldo, "");
+        strcpy(eth_saldo, "");
+        strcpy(xrp_saldo, "");
+
+        if (strcmp(opcao, "BTC") == 0) {
+            strcpy(btc_saldo, compra_saldo);
+        } else if (strcmp(opcao, "ETH") == 0) {
+            strcpy(eth_saldo, compra_saldo);
+        } else {
+            strcpy(xrp_saldo, compra_saldo);
+        }
+        snprintf(brl_saldo, sizeof(brl_saldo), "%.2lf", custo * -1);
+
+        insertTransacao(cpf, '+', compra_saldo, opcao);
+        updateSaldo(cpf, brl_saldo, btc_saldo, eth_saldo, xrp_saldo);
+
+        printf(GRN "Transação realizada com sucesso!\n" CRESET);
+        sleep(2);
     }
 }

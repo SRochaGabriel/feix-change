@@ -131,6 +131,8 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                     } else if (result == 2) {
                         *tela = 2;
                     }
+                } else if (opt == 'I') {
+                    compraCripto(user);
                 } else {
                     *erro = 1;
                 }

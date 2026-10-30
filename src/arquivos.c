@@ -432,72 +432,87 @@ void updateSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp) {
     double xrp_d = 0;
     double new_valor = 0;
 
-    if (f == NULL) {
+    if (f == NULL || f2 == NULL) {
         printErro("Não foi possível atualizar o saldo");
         erro = 1;
     }
 
     if (erro == 0) {
         while (fgets(linha, sizeof(linha), f)) {
+            erro = 0;
             pos = strcspn(linha, ";");
             strncpy(cpf_compare, linha, pos);
 
-            if (strcmp(cpf_compare, cpf) == 0) {
-                pos++;
-                strncpy(data, linha + pos, 100);
-                pos = strcspn(data, ";");
-                strncpy(BRL, data, pos);
-                pos++;
-                strncpy(data, data + pos, 100);
-                pos = strcspn(data, ";");
-                strncpy(BTC, data, pos);
-                pos++;
-                strncpy(data, data + pos, 100);
-                pos = strcspn(data, ";");
-                strncpy(ETH, data, pos);
-                pos++;
-                strncpy(data, data + pos, 100);
-                pos = strcspn(data, ";");
-                strncpy(XRP, data, pos);
+            if (strlen(linha) < 12) {
+                erro = 1; 
+            }
 
-                if (strlen(real) > 0) {
-                    brl_d = atof(BRL);
-                    new_valor = atof(real);
-                    brl_d += new_valor;
-                    snprintf(BRL, sizeof(BRL), "%.2lf", brl_d);
-                }
-                
-                if (strlen(btc) > 0) {
-                    btc_d = atof(BTC);
-                    new_valor = atof(real);
-                    btc_d += new_valor;
-                    snprintf(BTC, sizeof(BTC), "%.2lf", btc_d);
-                }
-                
-                if (strlen(eth) > 0) {
-                    eth_d = atof(ETH);
-                    new_valor = atof(real);
-                    eth_d += new_valor;
-                    snprintf(ETH, sizeof(ETH), "%.2lf", eth_d);
-                }
-                
-                if (strlen(xrp) > 0) {
-                    xrp_d = atof(XRP);
-                    new_valor = atof(real);
-                    xrp_d += new_valor;
-                    snprintf(XRP, sizeof(XRP), "%.2lf", xrp_d);
-                }
+            if (erro == 0) {
+                if (strcmp(cpf_compare, cpf) == 0) {
+                    pos++;
+                    strncpy(data, linha + pos, 100);
+                    pos = strcspn(data, ";");
+                    strncpy(BRL, data, pos);
+                    pos++;
+                    strncpy(data, data + pos, 100);
+                    pos = strcspn(data, ";");
+                    strncpy(BTC, data, pos);
+                    pos++;
+                    strncpy(data, data + pos, 100);
+                    pos = strcspn(data, ";");
+                    strncpy(ETH, data, pos);
+                    pos++;
+                    strncpy(data, data + pos, 100);
+                    pos = strcspn(data, ";");
+                    strncpy(XRP, data, pos);
+    
+                    if (strlen(real) > 0) {
+                        brl_d = atof(BRL);
+                        new_valor = atof(real);
+                        brl_d += new_valor;
+                        snprintf(BRL, sizeof(BRL), "%.2lf", brl_d);
+                    }
+                    
+                    if (strlen(btc) > 0) {
+                        btc_d = atof(BTC);
+                        new_valor = atof(btc);
+                        btc_d += new_valor;
+                        snprintf(BTC, sizeof(BTC), "%lf", btc_d);
+                    }
+                    
+                    if (strlen(eth) > 0) {
+                        eth_d = atof(ETH);
+                        new_valor = atof(eth);
+                        eth_d += new_valor;
+                        snprintf(ETH, sizeof(ETH), "%lf", eth_d);
+                    }
+                    
+                    if (strlen(xrp) > 0) {
+                        xrp_d = atof(XRP);
+                        new_valor = atof(xrp);
+                        xrp_d += new_valor;
+                        snprintf(XRP, sizeof(XRP), "%lf", xrp_d);
+                    }
 
-                fprintf(f2, "%s;%s;%s;%s;%s", cpf_compare, BRL, BTC, ETH, XRP);
-            } else {
-                fprintf(f2, "%s", linha);
+                    cpf_compare[strcspn(cpf_compare, "\n")] = 0;
+                    BRL[strcspn(BRL, "\n")] = 0;
+                    BTC[strcspn(BTC, "\n")] = 0;
+                    ETH[strcspn(ETH, "\n")] = 0;
+                    XRP[strcspn(XRP, "\n")] = 0;
+    
+                    fprintf(f2, "%s;%s;%s;%s;%s\n", cpf_compare, BRL, BTC, ETH, XRP);
+                } else {
+                    fprintf(f2, "%s", linha);
+                }
             }
         }
 
-        fclose(f);
-        fclose(f2);
-        remove(CART_PATH);
-        rename("data/carteiraUPDT.txt", CART_PATH);
+        if (erro == 0) {
+            fclose(f);
+            fclose(f2);
+            remove(CART_PATH);
+            rename("data/carteiraUPDT.txt", CART_PATH);
+        }
     }
 }
 
