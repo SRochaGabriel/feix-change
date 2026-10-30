@@ -132,7 +132,14 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                         *tela = 2;
                     }
                 } else if (opt == 'I') {
-                    compraCripto(user);
+                    result = matchSenha(getUsrSenha(user));
+                    while(getchar() != '\n');
+                    
+                    if (result == 1) {
+                        compraCripto(user);
+                    }
+                } else if (opt == 'V') {
+                    vendeCripto(user);
                 } else {
                     *erro = 1;
                 }
