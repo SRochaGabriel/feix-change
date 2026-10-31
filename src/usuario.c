@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -376,6 +375,7 @@ int saque(Usuario *user) {
     printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
 
     do {
+        strcpy(valor, "");
         erro = 0;
         printf("Quanto deseja sacar? Informe como (99.99): R$ ");
         fgets(valor, sizeof(valor), stdin);
@@ -514,7 +514,10 @@ void compraCripto(const Usuario *user) {
 
     strcpy(cpf, getUsrCpf(user));
 
-    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+    printf(BLU "##############################" YEL " SALDO ATUAL " BLU "##############################\n" CRESET);
+    exibeSaldo(user);
+
+    printf("\nDigite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
 
     do {
         erro = 0;
@@ -554,7 +557,7 @@ void compraCripto(const Usuario *user) {
     } while (erro == 1);
     
     if (stop == 0) {
-        printf("Essa compra incluira uma taxa de %.2f%.\n", taxa * 100);
+        printf("Essa compra incluira uma taxa de %.2f%%.\n", taxa * 100);
         do {
             erro = 0;
             printf("Informe quanto deseja comprar de %s em reais: R$ ", opcao);
@@ -621,7 +624,7 @@ void compraCripto(const Usuario *user) {
     }
 
     if (stop == 0) {
-        printf("Confirmando transação...");
+        printf("Confirmando transacao...");
         sleep(1);
 
         snprintf(compra_saldo, sizeof(compra_saldo), "%lf", compra_saldo_d);
@@ -642,7 +645,7 @@ void compraCripto(const Usuario *user) {
         insertTransacao(cpf, '+', compra_saldo, opcao);
         updateSaldo(cpf, brl_saldo, btc_saldo, eth_saldo, xrp_saldo);
 
-        printf(GRN "Transação realizada com sucesso!\n" CRESET);
+        printf(GRN "Transacao realizada com sucesso!\n" CRESET);
         sleep(2);
     }
 }
@@ -670,7 +673,10 @@ void vendaCripto(const Usuario *user) {
 
     strcpy(cpf, getUsrCpf(user));
 
-    printf("Digite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
+    printf(BLU "##############################" YEL " SALDO ATUAL " BLU "##############################\n" CRESET);
+    exibeSaldo(user);
+
+    printf("\nDigite " RED "SAIR" CRESET " a qualquer momento para cancelar a operacao e retornar ao menu.\n");
 
     do {
         erro = 0;
@@ -710,7 +716,7 @@ void vendaCripto(const Usuario *user) {
     } while (erro == 1);
     
     if (stop == 0) {
-        printf("Essa tera uma taxa de %.2f%.\n", taxa * 100);
+        printf("Essa tera uma taxa de %.2f%%.\n", taxa * 100);
         do {
             erro = 0;
             printf("Informe quanto deseja vender de %s: ", opcao);
@@ -764,10 +770,9 @@ void vendaCripto(const Usuario *user) {
         cotacao_d = atof(cotacao);
         
         pagamento = (valor_d * cotacao_d) - (valor_d * cotacao_d * taxa);
-        venda_saldo_d -= valor_d;
 
         do {
-            printf(YEL "Voce recebera R$ %.2lf por %lf %s. Deseja confirmar?\n" CRESET, pagamento, valor, opcao);
+            printf(YEL "Voce recebera R$ %.2lf por %s %s. Deseja confirmar?\n" CRESET, pagamento, valor, opcao);
             printf("S - Sim     N - Nao\n");
             
             confirma = toupper(getchar());

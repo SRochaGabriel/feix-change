@@ -139,7 +139,7 @@ void navegacao(int *tela, char opt, int *running, int *auth, int *erro, Usuario 
                         compraCripto(user);
                     }
                 } else if (opt == 'V') {
-                    vendeCripto(user);
+                    vendaCripto(user);
                 } else {
                     *erro = 1;
                 }
