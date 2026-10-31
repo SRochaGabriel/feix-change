@@ -12,4 +12,4 @@ int deposito(Usuario *user);
 int saque(Usuario *user);
 void exibeExtrato(Usuario *user);
 void compraCripto(const Usuario *user);
-void vendeCripto(const Usuario *user);
+void vendaCripto(const Usuario *user);

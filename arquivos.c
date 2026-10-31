@@ -35,7 +35,8 @@ int contaLinhas(char *filename) {
     return i;
 }
 
-void initCotacao(FILE *f) {
+void initCotacao() {
+    FILE *f = fopen(COT_PATH, "w");
     char data_str[20];
     char info[100];
     const char *cotacoes_ini[] = {"BTC;409672.99;", "ETH;11938.4;", "XRP;6.44;"};
@@ -43,11 +44,13 @@ void initCotacao(FILE *f) {
 
     snprintf(data_str, sizeof(data_str), "%ld", data);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         strcpy(info, cotacoes_ini[i]);
         strcat(info, data_str);
         fprintf(f, "%s\n", info);
     }
+
+    fclose(f);
 }
 
 float getVariacao() {
@@ -234,7 +237,7 @@ void initDataFiles () {
                 falha = 1;
                 strcpy(file_erro, (char *)arquivos[i]);
             } else if (i == 3) {
-                initCotacao(f);
+                initCotacao();
             }
 
             fclose(f);
@@ -304,6 +307,7 @@ int checkCpfUnique(char *cpf) {
             pos = strcspn(linha, ";");
             pos++;
             strncpy(cpf_compare, linha + pos, 11);
+            cpf_compare[11] = '\0';
 
             if (strcmp(cpf_compare, cpf) == 0) {
                 printErro("Informacoes de cadastro invalidas. Voce sera redirecionado para a tela inicial. Tente se cadastrar novamente.");
@@ -343,6 +347,7 @@ int authUser(char *nome, char *cpf, char *senha) {
             pos = strcspn(dados, ";");
             pos++;
             strncpy(cpf_compare, dados, 11);
+            cpf_compare[11] = '\0';
             strncpy(senha_compare, dados + pos, 7);
             
             if (strcmp(cpf_compare, cpf) == 0 && strcmp(senha_compare, senha) == 0) {
@@ -384,6 +389,7 @@ void getSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp) {
         while (fgets(linha, sizeof(linha), f)) {
             pos = strcspn(linha, ";");
             strncpy(cpf_compare, linha, pos);
+            cpf_compare[pos] = '\0';
             
             if (strcmp(cpf_compare, cpf) == 0) {
                 pos++;
@@ -442,6 +448,7 @@ void updateSaldo(const char *cpf, char *real, char *btc, char *eth, char *xrp) {
             erro = 0;
             pos = strcspn(linha, ";");
             strncpy(cpf_compare, linha, pos);
+            cpf_compare[pos] = '\0';
 
             if (strlen(linha) < 12) {
                 erro = 1; 
@@ -523,7 +530,6 @@ void insertTransacao(const char *cpf, char tipo, char *valor, char *moeda) {
     char data_str[20];
 
     snprintf(data_str, sizeof(data_str), "%ld", data);
-    printf("%s;%s;%c;%s;%s\n", cpf, data_str, tipo, valor, moeda);
 
     if (f == NULL) {
         printErro("Não foi possível acessar a base de dados");
@@ -553,7 +559,7 @@ void getTransacoes(const char *cpf, int l, char linhas[l][200]) {
         while (fgets(linha, sizeof(linha), f)) {
             pos = strcspn(linha, ";");
             strncpy(cpf_compare, linha, pos);
-            
+            cpf_compare[pos] = '\0';
 
             if (strcmp(cpf_compare, cpf) == 0) {
                 strcpy(linhas[i], linha);
