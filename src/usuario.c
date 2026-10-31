@@ -791,7 +791,7 @@ void vendaCripto(const Usuario *user) {
     }
 
     if (stop == 0) {
-        printf("Confirmando transação...");
+        printf("Confirmando transacao...");
         sleep(1);
 
         snprintf(valor, sizeof(valor), "%lf", valor_d * -1);
@@ -812,7 +812,7 @@ void vendaCripto(const Usuario *user) {
         insertTransacao(cpf, '-', valor, opcao);
         updateSaldo(cpf, brl_saldo, btc_saldo, eth_saldo, xrp_saldo);
 
-        printf(GRN "Transação realizada com sucesso!\n" CRESET);
+        printf(GRN "Transacao realizada com sucesso!\n" CRESET);
         sleep(2);
     }
 }
